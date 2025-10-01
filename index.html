@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Steam Profile Lookup</title>
+</head>
+<body>
+  <h1>Steam Profile Lookup</h1>
+  <input type="text" id="steamIdInput" placeholder="Enter Steam ID" />
+  <button onclick="lookupProfile()">Lookup</button>
+
+  <script>
+    async function lookupProfile() {
+      const steamId = document.getElementById('steamIdInput').value.trim();
+      if (!steamId) {
+        alert("Please enter a Steam numeric ID");
+        return;
+      }
+      try {
+        const response = await fetch(`https://api.github.com/repos/Pacmanninja/SteamFolderID/actions/workflows/steam_lookup.yml/dispatches`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({steamId})
+        });
+        if (!response.ok) {
+          throw new Error('Failed to request profile');
+        }
+        const data = await response.json();
+        if (data.profileUrl) {
+          window.location.href = data.profileUrl; // Redirect to actual Steam profile page
+        } else {
+          alert("Profile URL not found");
+        }
+      } catch (e) {
+        alert('Error: ' + e.message);
+      }
+    }
+  </script>
+</body>
+</html>
